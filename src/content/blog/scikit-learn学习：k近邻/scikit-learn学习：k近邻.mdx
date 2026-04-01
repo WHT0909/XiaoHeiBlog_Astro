@@ -1,0 +1,81 @@
+---
+title: scikit-learn学习：k近邻
+description: scikit-learn 学习笔记
+publishDate: '2026-02-27 18:50:35'
+heroImage: { src: './kNN.png', alt: 'k近邻', color: '#B4C6DA' }
+tags:
+    - 机器学习
+draft: false
+language: '中文'
+comment: true
+---
+
+作为 sklearn 系列的第二篇博客，我们将介绍另一种常用的机器学习算法：k 近邻（k-NN）算法
+
+## 1. kNN 算法原理
+
+k 近邻（k-NN）是一种基于近邻的机器学习算法。它的原理非常简单：在分类任务中，样本点的标签由距离其最近的 k 个邻居的标签进行多数投票决定。以二分类任务为例，当 k=5 时，kNN 模型将计算待预测样本点与其他样本点的**距离**，并选择离他最近的 5 个“邻居”。如果这五个邻居中有三个的标签为 1，两个的标签为 0，则认为待预测样本点的标签为 1。回归任务同样类似，未知样本的预测值可由其邻居样本点的预测值经加权平均计算。由于 kNN 高度依赖于邻居样本，一些 kNN 算法的变体通过距离加权等方法输出待预测样本的标签值[1]。容易想到的一种变体算法思想如下：在选出的 k 个样本中，离未知样本靠较近的样本点将获得更高的权重。这种权重可简单设置为距离的倒数，在获得全部 k 个样本点的权重后，通过 softmax 函数映射到$(0, 1)$区间转换为概率分布。
+
+和随机森林、支持向量机等算法不同，kNN 在模型训练时实际上并没有**拟合**曲线的过程，因此属于惰性学习（lazy learning）的一种。
+
+## 2. kNN 的局限性
+
+kNN 基于近邻的特征也导致了它的局限性：最典型的问题便是维度诅咒（Curse of Dimensionality）。随着特征空间维度的增加，样本点的分布将变得极为稀疏，导致距离度量失效，即每个样本点之间的距离相近的现象。因此在特征维度较高时，传统的 kNN 可能无法有效区分样本。这一现象并非 kNN 的专属问题，事实上所有基于距离的机器学习方法都会面临相似的困境。
+
+## 3. 代码实现
+
+kNN 在 sklearn 中的接口类是`KNeighborsClassifier`[2]。关键参数包括`n_neighbors`、`weights`和`algorithm`。`n_neighbors`表示所选的最近邻数量，通常为奇数。若近邻数量设置的过小，则容易出现过拟合问题；若设置的过大则会导致欠拟合。`weights`表示预测中使用的权重函数，其中`uniform`为均匀权重，`distance`按距离的倒数对点进行加权，此外用户还可以通过自定义函数自拟权重。`algorithm`可以选择用于计算最近邻居的算法。
+
+在训练模型前，需要对数据进行预处理。kNN 基于距离分类，因此特征的量纲极为重要。在训练前需要对数据进行标准化处理（详见下面代码的`StandardScaler`）。值得一提的是，StandardScaler 的实例 scaler 有两个重要的方法：`fit_transform`和`transform`。在第一次对训练数据进行标准化时调用的是`fit_transform`，对测试数据则使用`transform`<a href="#note3">[3]</a>。这是因为标准化只能在训练集上拟合（fit）。
+
+```python
+from sklearn.datasets import load_iris
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import StandardScaler
+
+# 1. 加载数据
+iris = load_iris()
+X = iris.data
+y = iris.target
+print(X.shape, y.shape) # (150, 4) (150,)
+
+# 2. 数据预处理
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# 3. 模型训练
+param_grid = {
+    'n_neighbors': [3, 5, 7, 9, 11],
+    'weights': ["uniform", "distance"],
+    'algorithm': ["auto", "ball_tree", "kd_tree", "brute"]
+}
+grid_search = GridSearchCV(estimator=KNeighborsClassifier(),
+                           param_grid=param_grid,
+                           cv=5,
+                           scoring='accuracy',
+                           n_jobs=1
+                           )
+grid_search.fit(X_train_scaled, y_train)
+print(f"最佳参数：{grid_search.best_params_}")
+print(f"最佳交叉验证分数：{grid_search.best_score_}")
+
+# 4. 预测与评估
+best_kNN_model = grid_search.best_estimator_
+y_pred_best = best_kNN_model.predict(X_test)
+y_pred_ba_best = best_kNN_model.predict_proba(X_test)
+y_pred = best_kNN_model.predict(X_test_scaled)
+print(f"预测结果：{y_pred}")
+print(f"真实标签：{y_test}")
+
+acc = accuracy_score(y_test, y_pred)
+print(f"ACC:{acc}")
+```
+
+相关资源和参考文献
+- [1]S. A. Dudani, "The Distance-Weighted k-Nearest-Neighbor Rule," in IEEE Transactions on Systems, Man, and Cybernetics, vol. SMC-6, no. 4, pp. 325-327, April 1976, doi: 10.1109/TSMC.1976.5408784.
+- [2][KNeighborsClassifier 文档](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html)
+- [3][博客文章“sklearn当中fit_transform和transform方法的区别；数据标准化”](https://www.cnblogs.com/smartljy/p/18520268)
