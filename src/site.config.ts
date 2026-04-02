@@ -3,7 +3,7 @@ import type { CardListData, Config, IntegrationUserConfig, ThemeUserConfig } fro
 export const theme: ThemeUserConfig = {
   // [Basic]
   /** Title for your website. Will be used in metadata and as browser tab title. */
-  title: 'Astro Theme Pure',
+  title: "XiaoHei's Blog",
   /** Will be used in index page & copyright declaration */
   author: 'Wang Haotian',
   /** Description metadata for your website. Can be used in page metadata. */
@@ -113,8 +113,8 @@ export const integ: IntegrationUserConfig = {
     applyTip: [
       { name: 'Name', val: theme.title },
       { name: 'Desc', val: theme.description || 'Null' },
-      { name: 'Link', val: 'https://astro-pure.js.org/' },
-      { name: 'Avatar', val: 'https://astro-pure.js.org/favicon/favicon.png' }
+      { name: 'Link', val: 'https://www.wht0909.top/' },
+      { name: 'Avatar', val: 'https://cdn.jsdelivr.net/gh/WHT0909/XiaoHeiBlog-Astro-PicGo/avatar.jpg' }
     ],
     // Cache avatars in `public/avatars/` to improve user experience.
     cacheAvatar: false

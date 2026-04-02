@@ -5,10 +5,8 @@ import Substats from '@/components/about/Substats.astro'
 import ToolSection from '@/components/about/ToolSection.astro'
 
 const headings = [
-  { depth: 2, slug: 'hobbies', text: 'Hobbies' },
-  { depth: 2, slug: 'tools', text: 'Tools' },
+  { depth: 2, slug: 'education', text: 'Education' },
   { depth: 2, slug: 'social-networks', text: 'Social Networks' },
-  { depth: 2, slug: 'gossips', text: 'Gossips' },
   { depth: 2, slug: 'about-blog', text: 'About Blog' }
 ]
 ---
@@ -16,7 +14,8 @@ const headings = [
 <PageLayout title='About' {headings} comment>
   <p>
     我是 Wang Haotian，现就读于四川大学生物医学工程学院，修读医学信息工程专业。我的研究兴趣包括脑机接口、医学信息、机器学习等
-
+  </p>
+  <p>
     我对诗歌、小说和摇滚乐很感兴趣，欢迎和我交流！
   </p>
   <p>
@@ -24,7 +23,8 @@ const headings = [
   </p>
 
   {/* tools */}
-  {/* h2 id='tools'>Tools</>
+  {/*
+  <h2 id='tools'>Tools</h2>
   <p>下面是我常用的一些工具：</p>
   <ToolSection
     class='mb-5'
@@ -139,10 +139,11 @@ const headings = [
         icon: import('@/assets/tools/windows11.svg?raw')
       }
     ]}
-  /> */}
+  />
+  */}
 
   {/* edutcation */}
-  <h2>Education</h2>
+  <h2 id="education">Education</h2>
   <Timeline events={
     [
       {date:'2022.9-2026.6', content:'四川大学（本科）'},
