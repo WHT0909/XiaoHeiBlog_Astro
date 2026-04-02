@@ -45,6 +45,12 @@ export default defineConfig({
   image: {
     responsiveStyles: true,
     service: { entrypoint: 'astro/assets/services/sharp' },
+    domains: [
+      "cdn.arthals.ink",
+      "avatars.githubusercontent.com",
+      "githubusercontent.com",
+      "*.githubusercontent.com"
+    ],
     remotePatterns: [
       // Allow improve Github activity chart
       {
