@@ -1,0 +1,98 @@
+---
+title: 'Hexo常用指令记录'
+description: '记录一些常用的 Hexo 指令'
+publishDate: '2025-7-23 16:56:08'
+updatedDate: '2025-07-24 09:22:58'
+heroImage: { src: './hexo.png', alt: 'Hexo', color: '#B4C6DA' }
+tags:
+    - 网站开发
+    - 前端
+draft: false
+language: '中文'
+comment: true
+---
+
+这篇博客参考了以下文章，如有侵权请联系作者，作者将立刻删除：
+
+- [Windows下hexo个人博客详细搭建教程](https://www.cnblogs.com/junlin623/p/17410016.html)
+
+- [Hexo的常用指令合集](https://blog.csdn.net/vpqtxzmzezeqjj9977/article/details/122982320)
+
+作者的第一版个人网站是使用 `html && JavaScript` 编写的，由于编程技术有限，做得比较简陋，且不方便管理和互动，于是想通过 Hexo 框架重新整理一下内容，顺便记录学习历程。
+
+## 1. hexo new "博客名"
+
+新建名为“博客名”的文章，文章将存于`.source/_posts`文件夹下
+
+可以通过`code 博客名.md`在 vscode 中编辑文章内容
+
+编辑完成后，使用`cd ../..`退回至 blog 文件夹，依次运行以下代码重新生成
+
+```bash
+hexo g
+hexo s
+```
+
+## 2. hexo g 或 hexo generate
+
+该指令的主要作用是**生成静态网页文件**
+
+在本地编写完新文章或者修改了文章内容、主题配置等之后，执行 `hexo g` 生成最新的静态网页，然后使用 `hexo s`（hexo server 的缩写，用于启动本地服务器）启动本地服务器，在浏览器中访问本地地址（如 http://localhost:4000 ），就能看到最新的博客效果。
+
+`hexo g` 通常会和其他指令配合使用，比如：
+- hexo clean
+
+    在执行 `hexo g` 之前，有时会先运行 `hexo clean` 指令，它会清空 public 文件夹中的内容。这样做是为了确保每次生成的静态文件都是最新的，避免因为之前生成的文件残留而导致的显示异常。
+
+- hexo d
+
+    `hexo d` 是 hexo deploy 的缩写，用于将生成好的静态文件（位于 public 文件夹）部署到指定的线上服务（如 GitHub Pages 等 ）。一般在执行完 `hexo g` 生成静态文件之后，再执行 `hexo d` 就能把博客发布到线上。不过，使用 `hexo d` 之前需要先在配置文件中正确配置部署相关的信息，如远程仓库地址、认证信息等
+
+## 3. hexo clean
+
+`hexo clean` 指令的作用是**清理缓存文件和之前生成的静态文件**
+
+在执行 `hexo g` 之前，最好先运行 `hexo clean` 清理缓存和旧的静态文件，避免因为缓存或旧文件的干扰，导致网页显示的内容与预期不符
+
+## 4. hexo s 或 hexo server
+
+用于启动服务，默认地址为4000端口
+
+## 5. hexo d 或 hexo deploy
+
+其核心作用是将本地生成的静态文件自动部署到远程服务器或托管平台，实现博客内容的在线发布。
+
+这部分内容可以看这篇博客：[Windows下hexo个人博客详细搭建教程](https://www.cnblogs.com/junlin623/p/17410016.html)
+
+由于之前作者已经有了一个 “用户名.github.io” 仓库，作者将原来的仓库改名并设为 private ，将新的个人博客放在 “用户名.github.io” 仓库中，但此后出现了网页链接错误的问题。经分析，可能是由于本地 DNS 可能缓存了之前网站的 IP 地址等解析信息。新仓库部署后，尽管 GitHub 已更新对应关系，但本地缓存未刷新，导致访问错误。解决方法如下（**注意：这条指令是在 Windows 系统下操作的**）： 
+
+```bash
+ipconfig /flushdns
+```
+
+执行后重新连接网页即可
+
+在对部署到 github.io 域名上的网页进行修改后，在终端依次执行以下代码即可： 
+
+```bash
+hexo clean
+hexo g
+hexo d
+```
+
+注：如果`hexo d`因网络原因报错，请使用`ping gihub.com`检查能否正常连接到 github 网站；这一步不要使用管理员权限在终端操作，我在这部分操作时出现了网络原因的报错；直接 win + R 打开 cmd，再`hexo d`即可
+
+## 6. 删除 / 修改博客
+
+删除博客时，需要将 .source/_posts 下的文章 .md 文件删除，再依次执行以下指令： 
+```bash
+hexo clean
+hexo g
+hexo s
+```
+
+有关 Hexo 博客的搭建可以参考的其他文章
+
+- [手把手教你搭建 Hexo 博客](https://webfem.com/post/hexo)
+
+- [Hexo使用攻略-添加分类及标签](https://www.jianshu.com/p/e17711e44e00)

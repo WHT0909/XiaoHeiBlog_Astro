@@ -1,0 +1,124 @@
+---
+title: '香橙派学习：镜像烧录 & 启动香橙派'
+description: '学习一下香橙派，还挺有意思的'
+publishDate: '2025-07-27 11:44:41'
+updatedDate: '2025-08-01 15:41:54'
+heroImage: { src: './orange.png', alt: 'Ajax', color: '#B4C6DA' }
+tags:
+    - 嵌入式
+draft: false
+language: '中文'
+comment: true
+---
+
+本文参考了以下文章：
+- [褐瞳さん 记录一下香橙派 Zero3 的使用](https://www.hetong-re4per.com/posts/documenting-an-opizero3-use/)
+- [如何低成本搭建一个 docker 轻服务器 随时随地访问小雅影音库 OrangePi Zero3 一键快速部署指南](https://www.bilibili.com/video/BV1yM4m167SK/?spm_id_from=333.337.search-card.all.click&amp;vd_source=0ea0c7956df75b2935422822b2001158)
+- [香橙派入门教程(一)](https://www.bilibili.com/video/BV1pu4m1u71o?spm_id_from=333.788.videopod.sections&amp;vd_source=0ea0c7956df75b2935422822b2001158)
+- [香橙派入门教程（二）香橙派启动](https://www.bilibili.com/video/BV1aq421w7x1?spm_id_from=333.788.videopod.sections&amp;vd_source=0ea0c7956df75b2935422822b2001158)
+- [香橙派连接电脑，串口与SSH](https://blog.csdn.net/itt21044ZCY/article/details/132742245)
+- [香橙派OrangePi Zero开发板的WiFi连接](https://blog.csdn.net/lsfeitianzhuzhuxia/article/details/134114635)
+
+这篇文章记录了作者从购买开发板、镜像烧录、启动开发板的过程，作者之前完全没有接触过嵌入式，希望本文能对和我一样的小白有所帮助
+
+## 1. 准备材料
+
+材料清单如下，均在某宝有售：
+
+- OrangePi Zero3 主板
+
+![OrangePi Zero3 主板](https://cdn.jsdelivr.net/gh/WHT0909/BlogImages@main/img/76dfcf7cefb79e970919ac5617f7ce85.jpg)
+<p style="text-align:center;">OrangePi Zero3 主板</p>
+
+- 5V 3A 电源（我的荣耀手机充电线不能给开发板正常供电，所以作者最终使用的是充电宝自带的 type-c 充电线）
+
+- sd 卡以及读卡器（我使用的是闪迪的 sd 卡，32G）
+
+![sd 卡](https://cdn.jsdelivr.net/gh/WHT0909/BlogImages@main/img/401623988ca8a51ff064dd93fd332920.jpg)
+<p style="text-align:center;">sd 卡</p>
+
+- CH340G USB 转 TTL 模块
+
+![CH340G USB 转 TTL 模块](https://cdn.jsdelivr.net/gh/WHT0909/BlogImages@main/img/e1de99b014b6cad152cbf33a3aa3cdc5.jpg)
+<p style="text-align:center;">CH340G USB 转 TTL 模块</p>
+
+## 2. 开始烧录
+
+下载 [balenaEtcher](https://etcher.balena.io/#download-etcher) 烧录软件，选择适合自己电脑的版本进行安装
+
+安装好后，将 sd 卡插入读卡器，读卡器插入电脑的 USB 接口，打开软件进行烧录
+
+![烧录](https://cdn.jsdelivr.net/gh/WHT0909/BlogImages@main/img/1b61d826e72dcb80a39ae6274b0d6d19.png)
+<p style="text-align:center;">烧录</p>
+
+等待烧录完成后，将 sd 卡插入开发板，卡槽在板子背面
+
+## 3. 启动香橙派
+
+作者采用串口连接的方式：先为香橙派开发板接通电源，待连接正常后，板载红色 LED 会先点亮，几秒后灯光转为绿色并持续闪烁，如下图所示
+
+![为开发板供电](https://cdn.jsdelivr.net/gh/WHT0909/BlogImages@main/img/b68a12e5d9af2377285c7fb20455a4f4.jpg)
+<p style="text-align:center;">为开发板供电</p>
+
+将 CH340 模块连接到开发板上，具体的连接方式如下图（图片来源：[记录一下香橙派 Zero3 的使用](https://www.hetong-re4per.com/posts/documenting-an-opizero3-use/)）
+
+要注意各种颜色线之间的连接关系，详情可查看卖家提供的引脚图
+
+![引脚图](https://cdn.jsdelivr.net/gh/WHT0909/BlogImages@main/img/55cb90d17d77b02c41845eff2344ed06.jpg)
+<p style="text-align:center;">引脚图</p>
+
+![CH340 和 Orange Pi 的连接方法](https://cdn.jsdelivr.net/gh/WHT0909/BlogImages@main/img/9f59fd26c13bf2f5a23786995fdd41dd.png)
+<p style="text-align:center;">CH340 和 Orange Pi 的连接方法</p>
+
+打开设备管理器，进入 “端口（COM 和 LPT）” 选项，找到名称含 “CH340” 的串口，从下图可看到对应设备为 COM5
+
+![查看 CH340 端口 ](https://cdn.jsdelivr.net/gh/WHT0909/BlogImages@main/img/f709f1122303b616e3ec449df9db08b8.png)
+<p style="text-align:center;">查看 CH340 端口</p>
+
+打开 MobaXterm ，依次点击 Session ， Serial ， Serial Port 选择刚才查看到的 COM 5，比特率设置为 115200 ，全部选择完毕后点击 OK，即可进入
+
+## 4. 连接 Wifi
+
+接下来我们需要给香橙派连接 WiFi ，这部分参考了[香橙派OrangePi Zero开发板的WiFi连接](https://blog.csdn.net/lsfeitianzhuzhuxia/article/details/134114635)
+
+首先，使用`nmcli dex wifi`查找周围热点，找到目标热点后，按`q`退出
+
+我的目标热点为`Travelsky`，见下图：
+
+![查找周围热点](https://cdn.jsdelivr.net/gh/WHT0909/BlogImages@main/img/c19717e357a6485ff51e86ab6a3b5a49.png)
+<p style="text-align:center;">查找周围热点</p>
+
+使用下面的指令连接 WiFi，其中`wifi_name`用目标热点的名称代替，`wifi_passwd`用密码代替
+
+```bash
+nmcli dev wifi connect wifi_name password wifi_passwd
+```
+
+使用`ifconfig`确认连接状态，在 wlan0 处可以看到 Orang Pi 的 IP 地址为 192.168.0.106
+
+![确认连接状态](https://cdn.jsdelivr.net/gh/WHT0909/BlogImages@main/img/3275db82df8fc12d614823bfdb24e23f.png)
+<p style="text-align:center;">确认连接状态</p>
+
+打开路由器后台，即可查看到该设备
+
+![路由器后台状态](https://cdn.jsdelivr.net/gh/WHT0909/BlogImages@main/img/40b253fbfc433d0086c33e08dfe1b646.jpeg)
+<p style="text-align:center;">路由器后台状态</p>
+
+## 5. 使用 ssh 连接香橙派
+
+刚才我们已经获取到了香橙派的 IP 地址，下次登录时无需使用串口，可以直接使用 ssh 进行登录
+
+给开发板连接电源后，使用 win + R + cmd 打开终端，输入·ping ip_addr·查看 ip 是否正确。需要将指令中的 ip_addr 替换为上面查看到的 ip 地址，如下图
+
+![查看 ip 是否正确](https://cdn.jsdelivr.net/gh/WHT0909/BlogImages@main/img/QQ_1753675255373.png)
+<p style="text-align:center;">查看 ip 是否正确</p>
+
+打开 MobaXterm，按照下图的顺序点击并填写对应内容
+
+![ssh 连接开发板](https://cdn.jsdelivr.net/gh/WHT0909/BlogImages@main/img/QQ_1753675417880.png)
+<p style="text-align:center;">ssh 连接开发板</p>
+
+等待几秒后，输入密码（初始密码为：orangepi），出现以下界面即为连接成功
+
+![ssh 连接成功](https://cdn.jsdelivr.net/gh/WHT0909/BlogImages@main/img/QQ_1753675534433.png)
+<p style="text-align:center;">ssh 连接成功</p>
