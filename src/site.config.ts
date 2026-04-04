@@ -114,7 +114,7 @@ export const integ: IntegrationUserConfig = {
       { name: 'Name', val: theme.title },
       { name: 'Desc', val: theme.description || 'Null' },
       { name: 'Link', val: 'https://www.wht0909.top/' },
-      { name: 'Avatar', val: 'https://cdn.jsdelivr.net/gh/WHT0909/XiaoHeiBlog-Astro-PicGo/avatar.jpg' }
+      { name: 'Avatar', val: 'https://cdn.jsdelivr.net/gh/WHT0909/XiaoHeiBlog-Astro-PicGo/20260404143149058.jpg' }
     ],
     // Cache avatars in `public/avatars/` to improve user experience.
     cacheAvatar: false
