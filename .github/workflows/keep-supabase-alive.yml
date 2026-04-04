@@ -1,0 +1,21 @@
+name: Keep Supabase Alive
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "33 23 * * *"
+
+jobs:
+  keep-supabase-alive:
+    name: Keep Supabase Alive
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+    
+    steps:
+      - name: Keep Supabase Alive
+        id: supabase
+        run: |
+          status_code=$(curl -s -o /dev/null -w "%{http_code}" -H "apikey: $SUPABASE_KEY" "$SUPABASE_URL/auth/v1/health")
+          echo "status_code=$status_code" >> $GITHUB_OUTPUT
