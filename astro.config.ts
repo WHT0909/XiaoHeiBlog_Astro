@@ -49,7 +49,8 @@ export default defineConfig({
       "cdn.arthals.ink",
       "avatars.githubusercontent.com",
       "githubusercontent.com",
-      "*.githubusercontent.com"
+      "*.githubusercontent.com",
+      "liveout.cn"
     ],
     remotePatterns: [
       // Allow improve Github activity chart
