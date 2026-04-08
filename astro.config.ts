@@ -50,7 +50,8 @@ export default defineConfig({
       "avatars.githubusercontent.com",
       "githubusercontent.com",
       "*.githubusercontent.com",
-      "liveout.cn"
+      "liveout.cn",
+      "tobykskgd.life"
     ],
     remotePatterns: [
       // Allow improve Github activity chart
