@@ -1,5 +1,5 @@
 ---
-import { Button, Collapse, Spoiler, Timeline } from 'astro-pure/user'
+import { Button, Collapse, Spoiler, Timeline, CardList } from 'astro-pure/user'
 import PageLayout from '@/layouts/CommonPage.astro'
 import Substats from '@/components/about/Substats.astro'
 import ToolSection from '@/components/about/ToolSection.astro'
@@ -13,14 +13,22 @@ const headings = [
 
 <PageLayout title='About' {headings} comment>
   <p>
-    我是 Xiao Hei，现就读于四川大学生物医学工程学院，修读医学信息工程专业。我的研究兴趣包括脑机接口、医学信息、机器学习等
+    我是 Xiao Hei，是一名大四本科生。目前就读于四川大学生物医学工程学院，修读医学信息工程专业。我本科期间的主要科研项目是“基于机器学习的抗病毒肽识别算法”。在未来的硕士阶段，我的研究方向是非侵入式脑机接口。
   </p>
+  <br/>
+  <p>我的兴趣爱好包括：</p>
+  <ul>
+    <li>围棋</li>我在2023-2024年间担任四川大学围棋协会会长，领导组织了一些校内围棋活动。棋力约为野狐五段，欢迎找我约棋~（传统围棋和非传统围棋都下）
+    <li>羽毛球</li>高中的时候总玩，上大学后就很少打了😂
+    <li>文学</li>尤其是现代诗和短篇小说。我最喜欢的诗人是张枣，最喜欢的作家是 Raymond Carver
+    <li>电影</li>电影鉴赏能力约等于零，但喜欢看个热闹<br/>最喜欢的导演是 Quentin Tarantino，我喜欢<i>Inglourious Basterds</i>！
+    <li>音乐</li>我非常喜欢摇滚乐！喜欢的乐队太多了：腰、P.K.14、假假條、窦唯&译乐队...<br/>我最喜欢的音乐人是罗大佑。哦对了，我还喜欢王菲、陶喆和方大同
+  </ul>
+  <br/>
   <p>
-    我对诗歌、小说和摇滚乐很感兴趣，欢迎和我交流！
+    我的个性签名是: <i><strong>Wir müssen wissen.Wir werden wissen.</strong></i>
   </p>
-  <p>
-    Motto: Wir müssen wissen.Wir werden wissen.
-  </p>
+  <p>有关这句话的更多内容请看我的博客“谈谈我的个性签名”~</p>
 
   {/* tools */}
   {/*
