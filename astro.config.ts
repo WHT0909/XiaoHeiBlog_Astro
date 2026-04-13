@@ -51,7 +51,8 @@ export default defineConfig({
       "githubusercontent.com",
       "*.githubusercontent.com",
       "liveout.cn",
-      "tobykskgd.life"
+      "tobykskgd.life",
+      "www.motues.top"
     ],
     remotePatterns: [
       // Allow improve Github activity chart
