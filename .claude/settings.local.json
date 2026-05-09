@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python _make_figures.py)",
+      "Bash(python -c ' *)"
+    ]
+  }
+}
