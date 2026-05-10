@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(python _make_figures.py)",
-      "Bash(python -c ' *)"
+      "Bash(python -c ' *)",
+      "Bash(ls D:\\\\\\\\Github_Projects\\\\\\\\XiaoHeiBlog_Astro\\\\\\\\src\\\\\\\\content\\\\\\\\blog\\\\\\\\脑电数据处理教程 *)",
+      "Bash(ls D:\\\\\\\\Github_Projects\\\\\\\\XiaoHeiBlog_Astro\\\\\\\\src\\\\\\\\content\\\\\\\\blog\\\\\\\\超参数优化（1）：网格搜索和随机搜索 *)",
+      "Bash(read f *)",
+      "Bash([ ! -f \"imgs/$f\" ])"
     ]
   }
 }

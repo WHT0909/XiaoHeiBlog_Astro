@@ -1,0 +1,199 @@
+{
+  "main": {
+    "id": "e9abf06cab7f19f3",
+    "type": "split",
+    "children": [
+      {
+        "id": "ee6d68bc8368abf7",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5ef26ab6c85b6198",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "新标签页"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "3323fbc2646ef859",
+    "type": "split",
+    "children": [
+      {
+        "id": "f3020b180ce12ee1",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f5e3cc12812db102",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "3bc3cbc8be78c6be",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "2bfd495513daf5c3",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "144d72672ba2ce2e",
+    "type": "split",
+    "children": [
+      {
+        "id": "463a8e9c368082d0",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7a0cb6e53a637ea3",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "01_基础知识预备和预处理_1.md",
+                "collapseAll": true,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "01_基础知识预备和预处理_1 的反向链接列表"
+            }
+          },
+          {
+            "id": "b3c04c794b83c349",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "01_基础知识预备和预处理_1.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "01_基础知识预备和预处理_1 的出链列表"
+            }
+          },
+          {
+            "id": "a7bd15ae78b5159b",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "836f3e5873874753",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
+            }
+          },
+          {
+            "id": "7155ee0aba90b15f",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "大纲"
+            }
+          }
+        ],
+        "currentTab": 4
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false
+    }
+  },
+  "active": "5ef26ab6c85b6198",
+  "lastOpenFiles": [
+    "01_基础知识预备和预处理.md",
+    "imgs/Pasted image 20260417110718.png",
+    "imgs/Pasted image 20260417112841.png",
+    "imgs/Pasted image 20260417112455.png",
+    "imgs/Pasted image 20260417110818.png",
+    "imgs/Pasted image 20260417101349.png",
+    "imgs/Pasted image 20260417104047.png",
+    "imgs/Pasted image 20260417103903.png",
+    "imgs/Pasted image 20260417103747.png",
+    "imgs/Pasted image 20260417103725.png",
+    "imgs/Pasted image 20260417103708.png",
+    "notes/Matlab 启动eeglab前的准备工作.md",
+    "notes",
+    "imgs",
+    "欢迎.md"
+  ]
+}

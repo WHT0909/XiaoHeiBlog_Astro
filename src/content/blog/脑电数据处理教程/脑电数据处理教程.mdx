@@ -1,0 +1,521 @@
+---
+title: 脑电数据处理教程
+description: '介绍脑电信号的产生原理、特征分析方法，以及基于 EEGLAB 的脑电数据预处理完整流程'
+# heroImage: { src: './封面画作.png', alt: 'Web', color: '#B4C6DA' }
+publishDate: '2026-05-10 12:21:21'
+tags:
+    - EEG
+draft: false
+language: '中文'
+comment: true
+---
+import { Aside } from 'astro-pure/user'
+
+<Aside>
+本文是 bilibili [零基础脑电数据处理教程](https://www.bilibili.com/video/BV1Bh4113776/?spm_id_from=333.337.search-card.all.click&vd_source=0ea0c7956df75b2935422822b2001158)“基础知识预备和预处理”部分的课程笔记。笔者最开始使用 Obsidian 记录，后由 claude code + deepseek V4 pro 将原笔记内容转为博客文章。笔者已经检验文章内容并修改了一些表达方式，确保没有 AI 引起的学术错误。
+</Aside>
+
+脑电图（Electroencephalography, EEG）通过放置在头皮表面的电极记录大脑神经元的突触后电位变化，是认知神经科学和临床诊断中广泛使用的非侵入式脑功能检测技术。由于头皮脑电信号强度微弱且由多种信号混合叠加而成，原始数据需要经过严格的预处理才能用于后续的统计分析。本文从脑电信号的生理基础出发，介绍脑电的预处理方法，并基于 EEGLAB（2026.0.0 版本）详细阐述数据导入、电极定位、滤波、降采样、分段与基线校正、插值坏导、重参考、独立成分分析（ICA）以及伪迹剔除等十个预处理关键步骤的具体操作。
+
+## 1. 脑电信号的产生
+
+大脑中的神经元通过动作电位和突触后电位进行信息传递，其电活动可通过不同尺度的记录技术进行测量：
+
+- **膜片钳法**：在离体细胞或脑片上记录单个离子通道的电流活动，信号强度为毫伏（mV）级别，但无法在活体上进行。
+- **局部场电位**：将微电极插入深部脑区，记录电极尖端附近神经元群体的突触后电位总和，信号强度为微伏（$\mu \rm{V}$）级别，属于侵入式记录。
+- **头皮脑电**：在头皮表面放置电极，记录大脑皮层锥体神经元同步放电所产生的电场变化。由于信号须穿过颅骨、脑脊液和头皮等介质（即容积传导效应），其强度极为微弱，且由多种信号**混合叠加**而成。
+
+本文所讨论的"脑电"指头皮脑电。
+
+## 2. 脑电的特征与分析
+
+脑电信号可从以下四个维度进行描述：
+
+- **时间**：信号随时间的演变过程
+- **幅度**：信号的电压强度（$\mu \rm{V}$）
+- **频率**：单位时间内的振荡次数（Hz）
+- **通道**：不同电极位置的信号空间分布
+
+基于上述维度，脑电分析可分为以下几类：
+
+- **时域分析**：时间 + 幅度，如事件相关电位的波幅和潜伏期测量
+- **频域分析**：幅度 + 频率，通过傅里叶变换将时域信号转换至频域，计算各频段的功率谱密度
+- **时频分析**：时间 + 幅度 + 频率，利用短时傅里叶变换（STFT）或小波变换考察信号的频谱随时间的动态变化
+- **功能连接**：时间 + 幅度 + 频率 + 通道，分析不同脑区之间的相干性、相位同步等关系
+
+根据实验范式的不同，脑电图可分为两类：
+
+- **EEG（静息态）**：受试者在闭眼或睁眼静息状态下记录的自发脑电活动。主要用于频域分析、时域分析、功能连接和微状态分析，常作为被试间变量用于正常人与患者的对比研究。
+- **ERP（任务态）**：事件相关电位，通过向受试者呈现特定刺激（视觉、听觉等）诱发的锁时脑电活动。主要用于时域分析、时频分析和溯源分析，常作为被试内变量用于不同实验条件的对比。
+
+![EEG与ERP的分类](./imgs/Pasted_image_20260415161106.png)
+
+脑电技术的核心优势在于其**高时间分辨率**（可达毫秒级），特别适合时频分析；但其空间分辨率较低，难以精确定位深部脑区的神经活动源。
+
+## 3. 脑电的预处理
+
+预处理是脑电数据分析的前提和基础。原始脑电数据含有大量非神经活动来源的噪声和伪迹，只有经过系统化的预处理，后续的统计分析才能得出可靠结论。预处理的完整流程如下图所示：
+
+![预处理流程图](./imgs/Pasted_image_20260415161523.png)
+
+在正式开始预处理之前，需要先完成 EEGLAB 的安装和配置。首先从 [EEGLAB 官网](https://sccn.ucsd.edu/eeglab/) 下载最新版本（本文使用 eeglab2026.0.0），将安装包解压至 `D:/Matlab_EEG_Toolbox/` 目录下。在 MATLAB 中打开该文件夹，将其添加到 MATLAB 的搜索路径中：
+
+![添加EEGLAB到MATLAB路径](./imgs/8dc17ca848ca16beffaf5fe772bce03e.png)
+
+EEGLAB 文件夹图标变亮即表示设置成功。此后在 MATLAB 命令窗口中输入 `eeglab` 即可启动 EEGLAB：
+
+![EEGLAB启动界面](./imgs/Pasted_image_20260416154106.png)
+
+### 3.1 导入数据
+
+不同厂商的脑电采集设备输出的数据格式各不相同。常见的原始数据格式包括：
+
+| 格式 | 说明 |
+|------|------|
+| `.eeg` + `.vmrk` + `.vhdr` | BrainVision 格式，三者配套，不可缺失 |
+| `.edf` / `.bdf` | 欧洲标准格式，`.bdf` 精度更高 |
+| `.cnt` | 老款 NeuroScan 设备导出格式 |
+| `.mff` | EGI 设备导出格式 |
+
+EEGLAB 处理的内部格式为 `.set` + `.fdt`。
+
+<Aside>
+**脑电数据格式**
+
+BrainVision 格式（`.eeg` + `.vmrk` + `.vhdr`）中三个文件必须完整：
+- `.vhdr`（头文件）：记录电极位置、采样率、通道数等元信息
+- `.vmrk`（标记文件）：记录事件和刺激标记（如刺激出现的时间点）
+- `.eeg`（数据文件）：存储真实的脑电波形数据
+
+EEGLAB 格式（`.set` + `.fdt`）：
+- `.set`：相当于说明书，记录通道信息、事件、采样率、电极位置和处理历史等信息
+- `.fdt`：存储真实的脑电信号数据
+</Aside>
+
+在导入数据前，需要先安装 **bva-io** 插件（参见[相关教程](https://blog.csdn.net/qq_52137732/article/details/145034680)），否则会出现如下错误：
+
+```text
+You are using the latest version of EEGLAB.
+
+错误使用 [plugin_askinstall](matlab:matlab.lang.internal.introspective.errorDocCallback\('plugin_askinstall',%20'D:\Matlab_EEG_Toolbox\eeglab2026.0.0\functions\adminfunc\plugin_askinstall.m',%2051\)) ([第 51 行](matlab:%20opentoline\('D:\Matlab_EEG_Toolbox\eeglab2026.0.0\functions\adminfunc\plugin_askinstall.m',51,0\)))  
+Cannot find bva-io extension, use EEGLAB Extension Manager to install it  
+
+错误使用 [matlab.ui.internal.controller.WebMenuController/fireMenuSelectedEvent](matlab:matlab.lang.internal.introspective.errorDocCallback\('matlab.ui.internal.controller.WebMenuController/fireMenuSelectedEvent',%20'E:\matlab\toolbox\matlab\uitools\uicomponents\components\+matlab\+ui\+internal\+controller\WebMenuController.m',%2085\)) ([第 85 行](matlab:%20opentoline\('E:\matlab\toolbox\matlab\uitools\uicomponents\components\+matlab\+ui\+internal\+controller\WebMenuController.m',85,0\)))  
+计算 Menu Callback 时出错。
+```
+
+安装插件后，通过菜单 `File → Import data → Using EEGLAB functions and plugins → From Brain Vis. Rec. .vhdr file` 导入数据。在弹出的对话框中：
+
+- **Channels/Data**：默认即可
+- **Interval**：时间切片，如输入 `[1 1000]` 则仅导入第 1 至第 1000 个采样点之间的数据
+- **Channels**：通道选择，如输入 `[1:2 4]` 则仅导入第 1、2、4 通道的数据
+
+![导入数据对话框](./imgs/Pasted_image_20260415165654.png)
+
+可以为数据命名（将显示在数据集列表中，也可留空）：
+
+![命名数据集](./imgs/Pasted_image_20260416155943.png)
+
+导入完成后的界面如下：
+
+![导入完成的EEGLAB界面](./imgs/Pasted_image_20260415165758.png)
+
+<Aside>
+**图中的脑电数据信息**
+- **Channels per frame**：导联数为 64
+- **Frames per epoch**：每个数据段包含 439,880 个数据点
+- **Epochs**：数据被分为 1 个 epoch，表示仅有一段连续数据
+- **Events**：数据中包含 202 个事件标记（如刺激呈现、反应时刻等）
+- **Sampling rate (Hz)**：采样率为 1000 Hz，时间分辨率为 1 毫秒
+- **Reference**：参考电极，此处尚未定义
+- **Channel locations**：仅存电极标签，无三维位置信息，此时无法进行拓扑图绘制或源定位分析
+- **ICA weights**：未进行独立成分分析
+</Aside>
+
+导入完成后，通过 `File → Save current dataset as` 将数据保存为 `.set` 文件。
+
+### 3.2 电极定位
+
+此时 EEG 数据中仅有 Fp1、Fp2 等电极的标签名，尚未关联其在大脑表面的三维空间位置。电极定位的目的正是为每个电极标签匹配真实的解剖位置坐标。
+
+国际通用的电极放置标准为 **10–20 国际标准导联系统**：
+
+![10-20国际标准导联系统](./imgs/Pasted_image_20260415200133.png)
+
+EEGLAB 中内置了 10–20 系统的 75 导电极排布：
+
+![EEGLAB 75导电极排布](./imgs/Pasted_image_20260415200313.png)
+
+此外，EEGLAB 的默认电极文件 `standard-10-5-cap385.elp` 采用 10–05 系统排布，共包含 385 个电极。
+
+**操作步骤**：
+
+1. 通过 `File → Load Existing Dataset` 加载已保存的 `.set` 文件：
+
+![加载数据集](./imgs/Pasted_image_20260415201854.png)
+
+2. 通过 `Edit → Channel locations` 打开电极定位对话框：
+
+![Channel locations对话框](./imgs/Pasted_image_20260415201956.png)
+
+3. 在下拉菜单中选择 `Use BESA file for 4-shell dipfit spherical model`，然后点击 OK。该选项使用 EEGLAB 内置的 `standard-10-5-cap385.elp` 模板文件（标准电极文件）进行电极位置匹配。
+
+4. 点击 `Plot 2D` 查看电极二维分布。下面的小字表示 64 个电极位置只显示了 62 个。若命令行提示 `Channel lookup: no location for HEO, VEO`，说明 HEO 和 VEO 两个通道未匹配到位置信息，也就是说这两个通道的数据是空的（正常情况下用不到这两个，需要去掉，这里我们先不去掉，把它补上）：
+
+![2D电极分布图，62/64通道已定位](./imgs/Pasted_image_20260415202645.png)
+
+5. 在 MATLAB 中打开 `standard-10-5-cap385.elp` 文件（在 `D:\Matlab_EEG_Toolbox\eeglab2026.0.0\plugins\dipfit\standard_BESA\standard-10-5-cap385.elp`），可发现模板中的正确字段名为 **HEOG** 和 **VEOG**（而非 HEO 和 VEO）：
+
+![模板文件中的字段名](./imgs/Pasted_image_20260415202827.png)
+
+6. 将 `Channel locations` 对话框中 HEO 和 VEO 对应的标签修改为 HEOG、VEOG 后，重新点击 `Look up locs` 即可完成定位。
+
+完成后将数据另存为 `02_channel_location/1.set`。再次加载该文件时，`Channel locations` 字段应显示为 `Yes`。
+
+### 3.3 剔除无用电极
+
+在整个 EEG 信号处理流程中，以下电极通常不参与后续分析，需要剔除：
+
+- **HEOG**（垂直眼电）：记录眨眼活动
+- **VEOG**（水平眼电）：记录眼球水平运动（眼睛左右转）
+- **M1、M2**（双侧乳突）：常用作参考电极
+
+**操作**：`Edit → Select data`
+
+![数据筛选对话框](./imgs/Pasted_image_20260415205030.png)
+
+<Aside>
+**数据筛选参数说明**
+- **Time range**：按时间范围筛选，如 `[1 20]` 表示选取第 1–20 秒的数据
+- **Point range**：按采样点序号筛选
+- **Epoch range**：按试次编号筛选
+- **Channels**：按通道名称或编号筛选
+- **Channel types**：按通道类型筛选（如 EEG、EOG）
+</Aside>
+
+在 Channel 输入框中填入要剔除的通道，勾选 `on->remove these`，点击 OK：
+
+![剔除无用电极](./imgs/Pasted_image_20260415205317.png)
+
+### 3.4 滤波
+
+脑电数据中混有来自环境和生理活动的各类噪声，包括 50 Hz 的市电（工频）干扰、高频肌电噪声和低频皮肤电漂移等。**滤波的目的并非直接在时域中将超过截止频率的信号"删除"，而是通过傅里叶变换将信号转换至频域，在频域中去除噪声对应的频率成分后再逆变换回时域**。
+
+常用的四种滤波器：
+
+- **高通滤波器**：保留高于截止频率的信号成分，抑制低频漂移
+- **低通滤波器**：保留低于截止频率的信号成分，抑制高频噪声
+- **带通滤波器**：仅保留特定频率范围内的信号
+- **带阻滤波器**：抑制特定频率范围内的信号（如 50 Hz 工频干扰）
+
+滤波参数的选取须结合脑电的自然节律：
+
+![脑电节律分类表](./imgs/Pasted_image_20260415210953.png)
+
+推荐参数范围：
+- 低通滤波（上界）：30–100 Hz
+- 高通滤波（下界）：0.1–1 Hz
+- 带阻滤波（陷波）：49–51 Hz 或 48–52 Hz
+
+**操作**：`Tools → Filter the data → Basic FIR filter (new, default)`
+
+![滤波菜单](./imgs/Pasted_image_20260415211300.png)
+
+依次设置高通滤波（以 0.1 Hz 为例）：
+
+![高通滤波设置](./imgs/Pasted_image_20260415211342.png)
+
+程序运行中：
+
+![滤波运行中](./imgs/Pasted_image_20260415211409.png)
+
+低通滤波（以 40 Hz 为例）：
+
+![低通滤波设置](./imgs/Pasted_image_20260415211726.png)
+
+带阻滤波（以 48–52 Hz 为例），注意勾选 `Notch filter the data instead of pass band`：
+
+![带阻滤波设置](./imgs/Pasted_image_20260415211801.png)
+
+### 3.5 降采样
+
+采样率指单位时间内记录的采样点数量，单位为 Hz。其计算公式为：
+
+$$\text{采样率} = \frac{\text{采样点个数}}{\text{采样时间}}$$
+
+采样从时刻 0 开始：
+
+![采样示意图](./imgs/Pasted_image_20260416164123.png)
+
+根据 Nyquist 采样定理，采样率须大于感兴趣的信号最高频率的 2 倍，通常建议达到 3–4 倍。对于脑电信号而言，**250–1000 Hz 的采样率已足够**。过高的采样率会增大数据量，降低后续计算效率。降采样的意义在于**减少数据量、提高计算速度**，但此步骤并非必须。
+
+**操作**：`Tools → Change sampling rate`
+
+![降采样菜单](./imgs/Pasted_image_20260416165022.png)
+
+将采样率设为 500 Hz：
+
+![设置新采样率](./imgs/Pasted_image_20260416165056.png)
+
+保存降采样后的数据：
+
+![保存降采样数据](./imgs/Pasted_image_20260416165159.png)
+
+### 3.6 分段和基线校正
+
+<Aside type="caution">
+本步骤仅适用于 ERP（任务态）数据的处理流程。
+</Aside>
+静息态脑电存在基线漂移现象——脑电的直流电位会随时间缓慢漂移，导致不同试次的基线水平不一致。分段和基线校正的目的即是从连续数据中截取刺激相关的时间片段（Epoch），并以刺激前的一段基线期为参考进行校正。
+
+![基线漂移示意图](./imgs/Pasted_image_20260416165818.png)
+
+<br/>
+
+![基线校正原理](./imgs/Pasted_image_20260416165933.png)
+
+**分段操作**：`Tools → Extract epochs`
+
+![Extract epochs菜单](./imgs/Pasted_image_20260416170046.png)
+
+![分段参数设置](./imgs/Pasted_image_20260416170323.png)
+
+<Aside>
+**Time-locking event type(s) 参数说明**
+
+此字段用于指定以何种事件编码为基准切分数据。若留空并按 OK，EEGLAB 将对数据中所有事件类型（`10`, `100`, `11`, `200`...）进行切分，生成混杂的试次；若输入特定事件编码（如 `10`），EEGLAB 仅在该事件出现的时间点前后进行切分。对于分条件的分析（如仅分析"正确反应"试次），正确选择事件类型至关重要。
+</Aside>
+
+**Out-of-bounds EEG limits if any [min max]** 是 EEGLAB 中处理事件靠近数据边界的安全限制参数，用来处理事件离数据边界太近，导致截取的试次超出原始数据范围的情况：
+- 留空（默认）：若截取范围超出原始数据边界则直接报错，确保数据完整性
+- 填写 `[min max]` 数值：允许生成不完整试次，超出部分用填充值替代，保证试次长度一致。比如填 `[-100 100]`，超出数据范围的部分会用 ±100 的数值填充（或 NaN），保证试次长度一致
+
+点击`Time-locking event type(s)`右侧的`...`可查看数据中的全部事件类型：
+
+![事件列表](./imgs/Pasted_image_20260416170352.png)
+
+事件编码含义（本示例数据集）：
+- `10`、`11`：分别为不同类型刺激的呈现编码
+- `100`、`200`：分别为错误和正确反应的事件标记
+- `boundary`：边界事件，通常标记数据分段处
+- `empty`：空事件
+
+<Aside>
+`10`, `100`, `11`, `200`等是**数据中具体的事件编码**（这里是自己采的数据里设置的）。比如实验代码中，“10” 可能代表 “呈现红色刺激”，“200” 代表 “呈现绿色刺激”。
+</Aside>
+
+选择事件编码 10 和 11 进行分段：
+
+![选择事件类型](./imgs/Pasted_image_20260416171003.png)
+
+分段完成后的数据概览：
+
+![分段后数据](./imgs/Pasted_image_20260416171130.png)
+
+如需仅保留特定事件编码的试次（如仅保留包含正确反应标记的试次）：
+
+![选择保留事件](./imgs/Pasted_image_20260417102543.png)
+
+在 type 下拉菜单中选择要保留的事件编码（此处选择 200），点击 OK：
+
+![选择200事件](./imgs/Pasted_image_20260417102650.png)
+
+![筛选结果](./imgs/Pasted_image_20260417102723.png)
+
+**基线校正操作**：`Tools → Remove baseline`
+
+![基线校正菜单](./imgs/Pasted_image_20260416171241.png)
+
+若分段时设定了 epoch 的时间范围为 −1 至 2 秒，则基线时间默认为 −100 至 0 毫秒（刺激前 100 毫秒）。保持默认值，点击 OK：
+
+![基线校正参数](./imgs/Pasted_image_20260416171349.png)
+
+可选择直接覆盖原文件保存：
+
+![保存确认](./imgs/Pasted_image_20260416171512.png)
+
+处理后的数据包含 200 个试次（epochs），每个试次时长为 3 秒（−1 至 2 秒）：
+
+![处理完成的数据](./imgs/Pasted_image_20260416171625.png)
+
+通过 `Plot → Channel data (scroll)` 查看脑电图：
+
+![查看脑电图菜单](./imgs/Pasted_image_20260416171751.png)
+
+![脑电图参数设置](./imgs/Pasted_image_20260416172229.png)
+
+图中左侧为 62 个通道的波形。调整右下角的比例尺可以改变通道波形的纵向间距（此处建议调至 50–100，使各通道波形更为清晰可分）：
+
+![调整比例尺后的脑电图](./imgs/Pasted_image_20260416172347.png)
+
+在本示例数据中，事件标记 100 和 200 虽非分段的基准事件，但由于它们恰好落在 −1 至 2 秒的 epoch 时间窗口内，因此同样显示在脑电图中。
+
+### 3.7 插值坏导和剔除坏段
+
+<Aside type="caution">
+**此步骤务必逐段手动检查，不可自动跳过。**
+</Aside>
+**坏导**指某一个电极通道的信号在整个记录过程中出现异常（如电极接触不良导致的持续噪声或信号丢失）。插值坏导使用 **Spherical 算法**，基于邻近正常电极的信号通过球面样条插值估计坏导通道的电位。
+
+**容积传导效应**：大脑内部的电活动并非直接传导至头皮上的电极，而是经由脑脊液、颅骨和头皮等介质传播。正是由于这种信号在空间上的连续性，才能利用周围正常电极的数据对坏导通道进行数学插值。
+
+**坏段**指部分时间段内所有通道信号均出现异常。与坏导不同，坏段直接删除即可——因为最终的 ERP 分析会对所有保留的试次进行叠加平均，个别坏段的删除不会影响结果的统计有效性。
+
+![坏导坏段示意图](./imgs/Pasted_image_20260416201819.png)
+
+**坏导插值操作**：
+
+假设通道 O1 为坏导。通过 `Tools → Interpolate electrodes`，在 Channel 输入框中输入 O1，勾选 `on remove`，保存即可：
+
+![选择O1通道](./imgs/Pasted_image_20260416202222.png)
+
+![移除O1通道](./imgs/Pasted_image_20260416202338.png)
+
+**去坏段操作**：
+
+在脑电波形浏览界面，用鼠标左键选中坏段区域，点击下方的 `Reject` 按钮：
+
+![手动选择坏段](./imgs/Pasted_image_20260416202758.png)
+
+此时控制台输出 `2/100 trials rejected`，数据集的 epoch 数目由 100 减少为 98：
+
+![去坏段后的数据](./imgs/Pasted_image_20260416202919.png)
+
+### 3.8 重参考
+
+脑电信号本质上是两个电极之间的电位差。在线记录时通常使用一个物理参考电极，而离线分析中常需要重新选择参考点（重参考），以满足不同分析目的。常见参考方案包括：
+
+- **全脑平均参考**：将所有电极的平均电位作为参考，适用于高密度导联
+- **双侧乳突参考**：以 TP9、TP10（双侧乳突电极）的平均电位为参考，常用于低密度导联
+- **REST 参考**：基于溯源模型的零参考技术
+
+**重参考必须置于插值步骤之后**，以确保参与平均参考计算的电极均为有效电极。
+
+![重参考概念图](./imgs/Pasted_image_20260416203324.png)
+
+**操作**：`Tools → Re-reference the data`
+
+![重参考菜单](./imgs/Pasted_image_20260416203515.png)
+
+![重参考设置](./imgs/Pasted_image_20260416203927.png)
+
+<Aside>
+**重参考方法**
+
+- **Compute average reference**：全脑平均参考，将所有电极的均值作为新的参考零点
+- **Huber average ref. with threshold**：基于 Huber 回归的进阶版平均参考，对异常电极具有更好的鲁棒性
+- **Re-reference data to channels**：双侧乳突平均参考，选中的 TP9 TP10 是对应的乳突电极
+- **Interpolate removed channel(s)**：插值移除的通道
+</Aside>
+
+重参考完成后，数据集的 `Reference` 字段显示为 `TP9 TP10`：
+
+![重参考完成](./imgs/Pasted_image_20260416204524.png)
+
+### 3.9 独立成分分析（ICA）
+
+独立成分分析（Independent Component Analysis, ICA）是脑电预处理中的核心步骤，旨在从混合的头皮脑电信号中分离出统计上独立的源成分，从而识别并去除眼动、眨眼、肌电等伪迹。
+
+ICA 的前提假设：
+1. 头皮记录的脑电信号是多个源信号（脑活动源 + 伪迹源）的线性混合
+2. 源信号之间在统计上相互独立
+3. 源信号的数量不超过记录通道的数量
+
+![ICA原理示意图](./imgs/Pasted_image_20260416204808.png)
+
+![ICA分解示意图](./imgs/Pasted_image_20260416205207.png)
+
+**操作**：`Tools → Decompose data by ICA`
+
+![ICA菜单](./imgs/Pasted_image_20260416205329.png)
+
+![ICA参数设置](./imgs/Pasted_image_20260416205540.png)
+
+上图中 PCA 成分数设为 59，计算方法为：原始 64 通道 − 剔除 HEOG、VEOG（2 个）− 剔除双侧乳突参考（2 个）− 插值的坏导（1 个）= 59 个有效成分。ICA 在运行时将首先使用 PCA 将数据降至该维度。
+
+ICA 计算较为耗时，运行界面如下：
+
+![ICA运行中](./imgs/Pasted_image_20260416205730.png)
+
+运行完成后，数据集的 `ICA weights` 字段显示为 `Yes`：
+
+![ICA完成](./imgs/Pasted_image_20260416210254.png)
+
+![ICA weights确认](./imgs/Pasted_image_20260416210355.png)
+
+### 3.10 剔除伪迹/坏段
+
+完成 ICA 分解后，需要识别并剔除与伪迹对应的独立成分，然后对剩余的坏段数据进行清理。
+
+**去除伪迹**：利用 **ICLabel** 插件对每个独立成分进行自动分类。ICLabel 基于预训练的深度学习模型，将每个 IC 标注为脑活动、眼动、肌电、心电、线路噪声等七种类型之一的概率。
+
+![ICLabel标记界面1](./imgs/Pasted_image_20260417101349.png)
+
+![ICLabel标记界面2](./imgs/Pasted_image_20260417101544.png)
+
+![ICLabel标记界面3](./imgs/Pasted_image_20260417101646.png)
+
+![ICLabel标记界面4](./imgs/Pasted_image_20260417101655.png)
+
+![ICLabel标记界面5](./imgs/Pasted_image_20260417101704.png)
+
+通过 `Tools → Classify components using ICLabel → Label components` 完成自动标记：
+
+![ICLabel分类菜单](./imgs/Pasted_image_20260417103005.png)
+
+点击 OK 开始分类：
+
+![ICLabel分类确认](./imgs/Pasted_image_20260417103023.png)
+
+![ICLabel运行中](./imgs/Pasted_image_20260417103112.png)
+
+分类完成后，EEGLAB 以饼图形式展示各成分的来源概率：
+
+![ICLabel分类结果饼图](./imgs/Pasted_image_20260417103300.png)
+
+可点击各成分编号查看其详细属性，包括地形图、功率谱和时域波形：
+
+![单个IC详情](./imgs/Pasted_image_20260417103442.png)
+
+设置预阈值标记伪迹成分后，通过 `Tools → Classify components using ICLabel → Flag components as artifacts` 去除标记的伪迹成分：
+
+![标记伪迹成分](./imgs/Pasted_image_20260417103708.png)
+
+![标记阈值设置](./imgs/Pasted_image_20260417103725.png)
+
+终端输出标记结果：
+
+![终端标记输出](./imgs/Pasted_image_20260417103747.png)
+
+刚才只是标记了伪迹，现在去掉伪迹：
+
+![确认去除成分](./imgs/Pasted_image_20260417103903.png)
+
+![去除伪迹成分后](./imgs/Pasted_image_20260417104047.png)
+
+需注意，ICA 的随机初始化和优化过程使其结果具有**不可重复性**，每次运行可能得到略有不同的分解结果。
+
+**去坏段：绝对值法**
+
+去除电压幅度超过 $100\ \mu\text{V}$ 的试次（在更为严格的标准下可降为 $70\ \mu\text{V}$）：
+
+![绝对值法去坏段](./imgs/Pasted_image_20260417110718.png)
+
+**预处理的最后一步，必须手动逐段浏览全部数据**，确保不存在遗漏的异常段。例如在浏览中发现 F6 电极的基线持续向上漂移：
+
+![F6电极异常漂移](./imgs/Pasted_image_20260417112455.png)
+
+此时需要回溯至插值坏导步骤，重新加载数据检查该通道的状态：
+
+![重新加载插值前数据](./imgs/Pasted_image_20260417112841.png)
+
+若发现 F6 在插值前即已存在问题，则需从插值步骤重新进行处理。这种迭代式的手动质量检查是确保预处理质量的最后防线。
+
+## 4. 小结
+
+脑电数据的预处理是一个系统化、多步骤的工程流程。本文从脑电信号的产生原理出发，依次介绍了数据导入、电极定位、无用电极剔除、滤波、降采样、分段与基线校正、插值坏导与剔除坏段、重参考、ICA 分解及伪迹剔除等十个步骤的完整操作流程与参数设置依据。每一步均需结合具体的实验设计和数据质量进行灵活调整。
+
+## 相关资源
+
+- [零基础脑电数据处理教程](https://www.bilibili.com/video/BV1Bh4113776/?spm_id_from=333.337.search-card.all.click&vd_source=0ea0c7956df75b2935422822b2001158)
+- [MATLAB脑电数据处理精要（三、实操）](https://www.hfechina.com/article-item-198.html)
