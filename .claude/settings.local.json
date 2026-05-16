@@ -6,7 +6,15 @@
       "Bash(ls D:\\\\\\\\Github_Projects\\\\\\\\XiaoHeiBlog_Astro\\\\\\\\src\\\\\\\\content\\\\\\\\blog\\\\\\\\脑电数据处理教程 *)",
       "Bash(ls D:\\\\\\\\Github_Projects\\\\\\\\XiaoHeiBlog_Astro\\\\\\\\src\\\\\\\\content\\\\\\\\blog\\\\\\\\超参数优化（1）：网格搜索和随机搜索 *)",
       "Bash(read f *)",
-      "Bash([ ! -f \"imgs/$f\" ])"
+      "Bash([ ! -f \"imgs/$f\" ])",
+      "WebFetch(domain:waline.js.org)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(ls /d/Github_Projects/XiaoHeiBlog_Astro 2>/dev/null || ls /mnt/d/Github_Projects/XiaoHeiBlog_Astro 2>/dev/null || echo \"Path not found\")",
+      "Read(//mnt/d/Github_Projects/**)",
+      "WebFetch(domain:artalk.js.org)",
+      "WebFetch(domain:zeabur.com)"
     ]
   }
 }
