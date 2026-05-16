@@ -14,7 +14,12 @@
       "Bash(ls /d/Github_Projects/XiaoHeiBlog_Astro 2>/dev/null || ls /mnt/d/Github_Projects/XiaoHeiBlog_Astro 2>/dev/null || echo \"Path not found\")",
       "Read(//mnt/d/Github_Projects/**)",
       "WebFetch(domain:artalk.js.org)",
-      "WebFetch(domain:zeabur.com)"
+      "WebFetch(domain:zeabur.com)",
+      "Bash(vercel list *)",
+      "Read(//d//**)",
+      "Bash(ls \"C:/Users/15806/.vercel\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://waline-xiaoheiblog-astro-ifzuiocv9-1580634517-qqcoms-projects.vercel.app/\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://waline-xiaoheiblog-astro.vercel.app/\")"
     ]
   }
 }
