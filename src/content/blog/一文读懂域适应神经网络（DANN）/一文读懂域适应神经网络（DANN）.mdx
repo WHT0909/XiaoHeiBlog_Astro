@@ -79,3 +79,65 @@ $$Loss = \min_{\theta_{f},\theta_{y}} \max_{\theta_{d}} (L_{y} - \lambda L_{d})$
 
 参数$\theta_{f}$、$\theta_{y}$的更新目标是让$L_{y} - \lambda L_{d}$尽可能小（式子中的$\min$），也就是让$L_{y}$尽可能小，$L_{d}$尽可能大。参数$\theta_{d}$的更新目标是让$L_{d}$尽可能小（$\theta_{d}$无法调控$L_{y}$，因为它只是域分类器的参数）。
 </Aside>
+
+参考代码：
+```python
+import torch
+from torch import nn
+
+class ReversalLayer(torch.autograd.Function):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+    
+    @staticmethod
+    def forward(ctx, x, alpha):
+        """
+        Args:
+            ctx : 上下文变量，用于存 alpha
+            x : 输入张量
+            alpha : 梯度反转强度
+        """
+        ctx.alpha = alpha
+        return x
+    
+    @staticmethod
+    def backward(ctx, grad_in):
+        alpha = ctx.alpha
+        return -grad_in * alpha, None
+
+class DANN(nn.Module):
+    def __init__(self, class_num, alpha):
+        super().__init__()
+        self.class_num = class_num
+        self.alpha = alpha
+        self.feature_extractor = nn.Sequential(
+            nn.Conv2d(in_channels=1, out_channels=10, kernel_size=(1,64), padding='same'),
+            nn.BatchNorm2d(num_features=10),
+            nn.Conv2d(in_channels=10, out_channels=10, kernel_size=(8,1), padding=0),
+            nn.BatchNorm2d(num_features=10),
+            nn.ELU(),
+            nn.MaxPool2d(kernel_size=(1,4)),
+            nn.Conv2d(in_channels=10, out_channels=5, kernel_size=(1,1)),
+            nn.Flatten() # torch.Size([1, 10000])
+        )
+        self.classifier = nn.Sequential(
+            nn.Linear(10000, 500),
+            nn.ReLU(),
+            nn.Linear(500, self.class_num)
+        )
+        self.domain_classifier = nn.Sequential(
+            nn.Linear(10000, 500),
+            nn.ReLU(),
+            nn.Linear(500, 2)
+        )
+    def forward(self, x):
+        features = self.feature_extractor(x)
+        class_res = self.classifier(features)
+        features2 = ReversalLayer.apply(features, self.alpha)
+        domain_res = self.classifier(features2)
+        return class_res, domain_res
+```
+
+代码部分参考了：
+- [OmegaXYZ：迁移学习模型 DANN 实现](https://omegaxyz.com/2021/09/05/dann/)
+- [torch.autograd.Function 用法及注意事项](https://cloud.tencent.com/developer/article/2159650)
