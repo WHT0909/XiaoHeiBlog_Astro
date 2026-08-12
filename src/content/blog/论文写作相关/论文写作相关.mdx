@@ -1,0 +1,419 @@
+---
+title: '论文写作相关'
+description: '记录一些写作技巧、注意事项等'
+publishDate: '2026-07-03 23:37:46'
+# heroImage: { src: './封面作品.png', alt: '张枣', color: '#B4C6DA' }
+tags:
+    - 论文写作
+draft: true
+language: '中文'
+comment: true
+---
+import { Aside } from 'astro-pure/user'
+
+## Zou Quan 老师论坛上的写作技巧
+
+这部分来自于电子科大 Zou Quan 老师的论坛：http://123.57.240.48/forum.php?mod=viewthread&tid=439&extra=page%3D1%26filter%3Dlastpost%26orderby%3Dlastpost
+
+### 摘要的写法
+
+对于刚开始研究生涯的同学来说，我建议头几篇论文按照一定的格式写。
+
+一篇学术论文有这么几大部分组成
+
+摘要abstract，简介introduction，相关工作related work，[主体部分自定义题目]，实验experiment，结论conclusion
+
+这篇帖子中介绍摘要的写法
+
+摘要可以由7个长句组成。
+
+第一句，大背景，表明你做的事情是很重要的。
+
+例句：xxx has emerged to be a critical problem/central issue in xxx area
+xxx has become a promising research direction due to xxx
+As xxx, the task of xxx becomes increasingly important
+xxx arises to be the current trend in xxx
+With recent development of xxx, the importance of xxx has been widely acknowledged.
+
+第二句，由于某种问题，你要做的事情是很困难的
+Unfortunately,  xxx harms xxx
+xxx is challenging due to xxx
+Major drawbacks of xxx are xxx
+The lack of xxx has led to serious problems such as xxx
+
+第三句，可以写也可以不写，前人的工作主要缺陷。
+Previous research mainly focus on xxx, which ignore xxx
+Traditional methods
+A limitation of prior research is
+
+第四句,本文关注的事情，这里主要讲思想而不是具体方法
+In this contribution, we focus on integrating xxx with xxx
+In this paper, we exploit xxx to generate precise prediction on xxx
+In this work, we explore the possibility/feasibility of modeling xxx and xxx simultaneously
+On the contrary, we investigate xxx in this work
+
+第五句，可以特别长，简要介绍本文具体采用的方法
+A xxx model is proposed, which xxx
+（这里通常可以给自己的model取个名字，并用加重号突出名字缩写的来源，如IKNN: Informative k-nearest neighbor pattern classification）
+We develop xxx, based on xxx features derived from xxx
+The presented framework consists of two stages, in the first stage xxx
+The properties of xxx are studied and employed in xxx
+
+第六句， 实验效果
+Experimental results on xxx data sets demonstrate the efficiency and effectiveness of the proposed model
+Our extensive empirical analysis under xxx scenarios shows the capability of xxx
+Experiments carried on xxx data sets show that our xxx method outperforms traditional methods in terms of xxx
+
+第七句，可以写也可以不写，把贡献highlight一下
+Our analysis is the largest such study we are aware of
+The discovery presented in this paper can be helpful for future research on xxx
+The encouraging results reveals the potential of xxx
+
+### 简介的写法
+
+对英文论文写作有畏惧感其实是不必要的。当有过一两次写作经历之后，就会发现写英文论文等于写八股文，英文词汇颠来倒去用的也就那么几个。实验室不要求大家写出辞藻华美，别出心裁的论文，但做个熟练工套模板大家还是能够轻易做到的。
+
+写英文论文的时候只要注意：
+1）每个自然段就写一个意思，用总-分-总的方法把这个意思说清楚了
+2）上下自然段逻辑清楚，不断层
+3）前文写的东西，后文有照应
+
+下面我们以简介为例，介绍总-分-总的写作方法
+
+简介可以写成5-7个自然段
+
+第一段，背景，你做的事情很重要或者很热门
+
+比如，假设这篇论文是以s方法做推荐系统
+
+总-推荐系统现在成为应用热点
+With the increasing amount of available information in the Internet, recommendation systems emerged to be a hot spot for intelligent  knowledge management.
+或
+Because of its capability of dealing with information over-load, recommendation systems have been widely used.
+
+分-举出推荐系统的几个典型应用
+Typical applications include xxx
+或：分-用具体数据说明他们现在非常热门
+For example, the number of users of xxx can easily exceeds xxx, the amount of xxx increased xxx per day
+
+总-推荐系统的重要性越来越受到重视
+Recently, recommendation systems have attracted more and more research interest
+
+第二段，你做的这个事情有什么挑战，或者前人做这个事情有什么缺点
+总-
+Although recommender systems have been widely studied in the academia and deployed in the industry,  most of these techniques suffer several inherent weaknesses.
+或
+However, recommending items to individuals is not a trivial task. It poses three challenges.  
+
+分-分点介绍挑战、困难、缺点等
+
+总-
+
+第三段，你的工作
+
+总-你的思路，注意这里讲的是你的思想，要足够直观和浅显，让人一看就明白，就觉得有道理
+Towards xxx, xxx heuristics are natural solutions to xxx
+To overcome the above challenges, we propose to xxx
+
+分-一个思路肯定也有多个细节，这里就分点介绍
+The key idea here is to .... We also ...
+
+总-总结本文贡献，这里可能需要几个自然段或者几个项目符号来总结你的主要工作，这时候要讲具体的模型或算法
+Contributions in this work are as follows:
+
+1）第四段
+2）第五段
+3）第六段
+
+我们一般喜欢写3点贡献。这样显得文章有分量。如果文章找来找去只有一点贡献，那建议暂时不要出手
+
+第七段，文章结构
+The paper is organized as follows: Section 1...
+
+### 论文主体的写法
+上文说过，英文论文写作很简单，只要掌握3原则：
+
+1）每个自然段就写一个意思，用总-分-总的方法把这个意思说清楚了
+2）上下自然段逻辑清楚，不断层
+3）前文写的东西，后文有照应
+
+下面结合论文主体部分的写法，谈一下如何处理论文的逻辑
+
+论文主体部分的写法是非常多样的
+
+你可以先抛概念，从理论入手，写的很抽象
+也可以由浅入深，从例子入手，写的很形象
+
+我建议新手用后一种。这种写法可以完全采用下面的模板
+
+假设我们写的是《Sample: A novel Recommendation model for sparse user-item matrix》
+
+第一逻辑段，套话：
+
+In this section, we depict the intuition and technical details of xxx
+
+第二逻辑段（包含若干自然段和图）给出一个running example，所谓的running example就是在全文中通用的例子
+In most recommendation scenario, sparsity of rating matrix leads to inaccurate prediction of user-item ratings. As illustrated in Fig. 1,  the input user-item matrix is a very sparse matrix because every user only rates few items. Suppose unrated data are covered with shade, xxx
+这段主要描述的是你在introduction里面介绍的challenge，不过要讲的更细，更直白，并且画个图把这个问题表示清楚。
+有的时候这个图会被有些作者放到introduction里面去，那样的写法也是可以的。
+
+第三逻辑段（有的时候作为一个subsection，包含若干自然段和至少一个图）给出你的主要工作细节
+
+第一个自然段肯定是说你的主要思路
+
+Intuitively, we can fill shaded blocks (missing data) using available information in the original matrix. If our algorithm achieves confidence in the prediction, then we give this shaded block a predicted rating value . Otherwise, we set the value of this missing
+data to zero.
+
+第二个自然段说这个直观的思路如何变成一个数学问题，或者如何正规的表达这个思路
+这里的写法无定法可循了，但注意同样一定要配图，不管是模型的图表示，还是流程图
+
+接下来的自然段具体的写解法、公式或者流程等，按照顺序来。在每一个小步骤里也可以先写直观思路（如果有的话），再写formal定义，最后写解法
+
+第四逻辑段，可有可无，Discussion
+讨论你提出的方法有什么显著的优点，要讲细，深入浅出
+
+这样的写法在逻辑上是非常顺畅的，读者理解没有困难
+
+### 实验部分
+
+1）每个自然段就写一个意思，用总-分-总的方法把这个意思说清楚了
+2）上下自然段逻辑清楚，不断层
+3）前文写的东西，后文有照应
+
+第三个原则在实验部分是体现的最明显的
+
+在introduction部分，我们指出，待研究的问题具备n种问题/挑战；
+在主体部分，我们根据这些问题/挑战，提出思路，并具体实现
+在主体的讨论部分（如果有的话），我们分析了为什么我们的方法能解决这些问题/挑战
+
+因此，在实验部分，要拿出具体数据证明，我们确实攻克了这些问题/挑战
+
+实验部分一般是这样写的
+
+第一逻辑段（section），experimental setup
+
+第一自然段，数据集的基本情况，来源，统计信息（一般需要用表说明）
+
+第二自然段，算法的运行平台，硬件环境等
+
+第二逻辑段-第n逻辑段，针对n个问题/挑战设计的比较实验
+在每一个逻辑段里，第一自然段都是套话+实验如何设计的
+In this subsection ,we evaluate the performance of xxx on xxx problem. The experiment is carried on xxx
+第二自然段，简单介绍用来比较的算法
+第三自然段，简单介绍评价指标
+图/表
+第四自然段，分析图/表。哪个算法表现好，好多少，为什么，或者告诉了我们什么
+As shown in figure/table x, xxx increase the accuracy of xxx to xxx...This suggests that
+
+
+有的时候，可以加几个逻辑段，做结果的展现
+
+实验设计的目的，是为了验证，我们的工作相比前人的工作，在某些问题上有所进步。尽量采用多个数据集，使结果更有说服力。如果只有一个数据集，可以按照某些规则进行数据集的划分。一般要做3~4组比较实验，每组实验采用3~6个经典的比较算法。图和表是最直观的展现方法。一般每个比较实验，一次性排2~4个图表是比较好的，如每个数据集一个图表或者每个评测指标一个图表。
+
+### 词库
+
+在文章中，很多时候是重复
+如introduction中讲过的挑战，主要思路，具体工作等，主体部分要说一遍，实验部分也要说一遍
+但每一遍都应该不太一样
+
+首先，侧重点不一样。 introduction中要讲的高屋建瓴一点，主体中要讲的具体一点
+但很重要的是，用的词也不要太相似
+
+这里给出一些常用的同义词。每个词的意义和用法略有不同，用前请查词典
+
+[混合类的算法]
+integrate, ensemble(集成学习用这个词), hybrid, combine, fusion, simultaneously, extend, expand,mixture,jointly,coupled, mutual,multi-, assemble
+
+[使用]
+utilize, employ, exploit, adopt,use,explore, with(We do... with ..., 最好Sth is done with... .  不要用We use sth to do...)
+
+[提高]
+increase, improve, enhance, reinforce,  boost，（注意：显著的提高可以用appropriate improvement，但不要用significant，除非是有统计数字支持）
+
+[发现]
+detect, recognize, identify, discover, find,recover, reveal,predict,extract,generate,distinguish xx from xx,
+
+[提出]
+propose, present, address
+
+[提出挑战]
+impose challenges，sth is confronted with new challenges （sth面对挑战）
+
+[说明了]
+indicating that, suggesting that
+
+[解决某问题]
+overcome +challenge/problem, address + problem, alleviate + problem, tackle + problem
+
+[大量]
+large, massive, high volume, large amount, fruitful, scale of data(大规模数据)，ultra-large
+
+[显著地]
+dramatically
+
+[预测]
+predict
+
+[优于]
+outperform, better, superior, prior(eg. Two models are used for..., however, there is no prior reason to assume a specific model in this question.)
+
+[因果关系]
+due to, hence, therefore
+
+[推断]
+inference
+
+[本身的，固有的，内在的]
+inherent (eg. It results from the randomness inherent in the XXX process.)
+
+[新的]
+novel (首选这个), new
+
+[更准确地说]
+More precisely,  Generally speaking,
+
+[定义]
+denote...as...
+
+[详细的]
+explicit
+
+[有助于]
+facilitate(后面一般加名词，不加to do，这个词比be helpful for 更学术化)
+
+[相似]
+be similar to(注意：不是with，区分be familar with)
+
+[目前已有的方法]
+the state-of-art methods
+
+[需要]
+require比need要好
+
+[据我们所知]（用于想表达又不是特别确定）
+To the best of our knowledge, it is the first time that....
+
+[路线图]
+roadmap，（We give a roadmap for our future work in Section 6.）
+
+[调节参数]
+tune parameters
+
+[确保]
+guarantee
+
+[显示出]
+exhibit(eg. Glioblastoma exhibits a large degree of molecular heterogeneity. 恶性胶质瘤充分展示了分子异构性 )
+reflect
+
+[分别地]
+respectively
+
+[非常重要]
+sth is of vital importance要好于sth is very important，其余的还有：essential, crucial
+First and foremost is。。。
+
+[凭经验的]
+empirical
+
+[描述]
+depict, describe, elucidate
+
+[产生]
+yield
+
+[尽管]
+in spite of, although, despite
+
+[矛盾]
+discrepancy, tradeoff, conflict
+
+[维度灾难，大数据无法计算]
+curse of dimensionality， computationally infeasible
+
+[创新]
+innovation
+
+[首先]
+primarily (eg. Oyster has major effects on human, primarily as food but also as source of dyes.)
+
+[从。。。角度]
+from (data analytics) perspectives
+
+[处理大数据]
+is capable of processing big data，tackle large data sets, handle, cope with large-scale data, 都比deal with要好
+
+[长期存在的]
+long-standing (eg: sth is a long-standing challenge)
+
+[充足的]
+adequate
+
+[结果]
+consequence
+
+[数数，枚举]
+enumerate, the number of(个数)
+
+[缺点]
+deficiency
+
+[减轻、消灭]
+mitigate，eliminate
+
+[行驶功能]
+trigger, execute
+
+[依照惯例的、和平常一样的]
+conventional
+
+[相反地]
+on the contrary,
+
+[波动]
+fluctuation
+
+[阻碍]
+obstacle (eg. These computational obstacles make network motif analysis unfeasible for many real-world applications.)
+
+[越来越多的]
+A growing number of, (不要用Moreand More)
+
+[被忽视了]
+hasnot fully been addressed (要比ignore语气更缓和一些)
+
+[步骤]
+procedure (XX has become an essential procedure to XXX)
+
+[不可避免的]
+inevitable
+
+[在。。。方面]
+in terms of
+
+[参与]
+penetrate，be involved in
+
+[面对]
+encounter （后面接challenges ）
+
+[最好不要用的词]
+obviously, certainly, and so on(可以用 etc代替)
+
+### 写作思路
+
+我们可以把投稿的学术论文分成2种，一种是小论文（英文4000-9000字），一种是大论文（10000字以上）
+
+以生物信息学为例，小论文一般投Letter、4区期刊，其中Bioinformatics和PLoS One则是小论文的最高档次。
+
+小论文一般情况下只有1个核心的创新点，说明创新点之后，则要用大量的实验、从各个角度去证明你创新点的有效性。创新点就像是易碎的物品、实验就像是外包装，审稿人就想打碎你的物品，你的包装一定要严密、全面、做到无懈可击。
+
+大论文一般情况有3个创新点。这3个创新点又可以分为并列式和递进式。
+如果是并列式，一定要围绕一个核心问题展开。比如，你说你的创新点有3个，分别是戴帽、穿衣、穿鞋。那么你要这样说明：为了御寒，我们提出了3个创新点；为了防止上面冷，我们戴帽；为了防止中间冷，我们穿衣；为了防止下面冷，我们穿鞋；通过上中下三层保护，我们不冷了！而且通过这三层保护，我们不再需要其他保护，已经足够御寒！
+这样论述，条例才清晰。切忌不要123三点堆砌，然后前言结论废话一说就结束。要让你的论文一步步吸引着读者去看。
+
+如果是递进式，则要一层层的叙述，一个创新点引出另一个，让读者跟着你的思路。比如：创新点1用动态规划的方法解决字符串比对；但动态规划耗时，于是提出创新点2：基于并行机制的计算方法；但并行计算导致内存溢出，于是提出创新点3：用树形存储结构代替矩阵数组。然后总结，通过以上3个创新点，我们完成了。。。
+
+同时大论文的实验也要充分。
+
+无论是小论文和大论文，切记：多画图，用漂亮的图来表达你的意思。在实验部分，能用柱状图就别用表格、能用曲线图就别用柱状图。
